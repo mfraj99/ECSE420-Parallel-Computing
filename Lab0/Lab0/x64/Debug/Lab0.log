@@ -1,0 +1,24 @@
+﻿  lodepng.c
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(773,34): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(1437,29): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(1441,31): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(1479,88): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(1513,86): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(1461,1): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(3441,54): warning C4267: 'function': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(3435,1): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(4244,75): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(4292,41): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(4372,59): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(5312,1): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+     Creating library D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\x64\Debug\Lab0.lib and object D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\x64\Debug\Lab0.exp
+kernel.cu.obj : error LNK2019: unresolved external symbol "unsigned int __cdecl lodepng_decode32_file(unsigned char * *,unsigned int *,unsigned int *,char const *)" (?lodepng_decode32_file@@YAIPEAPEAEPEAI1PEBD@Z) referenced in function "void __cdecl process(char *,char *)" (?process@@YAXPEAD0@Z)
+    Hint on symbols that are defined and could potentially match:
+      lodepng_decode32_file
+kernel.cu.obj : error LNK2019: unresolved external symbol "unsigned int __cdecl lodepng_encode32_file(char const *,unsigned char const *,unsigned int,unsigned int)" (?lodepng_encode32_file@@YAIPEBDPEBEII@Z) referenced in function "void __cdecl process(char *,char *)" (?process@@YAXPEAD0@Z)
+    Hint on symbols that are defined and could potentially match:
+      lodepng_encode32_file
+kernel.cu.obj : error LNK2019: unresolved external symbol "char const * __cdecl lodepng_error_text(unsigned int)" (?lodepng_error_text@@YAPEBDI@Z) referenced in function "void __cdecl process(char *,char *)" (?process@@YAXPEAD0@Z)
+    Hint on symbols that are defined and could potentially match:
+      lodepng_error_text
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\x64\Debug\Lab0.exe : fatal error LNK1120: 3 unresolved externals
