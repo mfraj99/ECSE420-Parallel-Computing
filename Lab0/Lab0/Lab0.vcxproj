@@ -78,12 +78,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <CudaCompile Include="kernel.cu" />
+    <CudaCompile Include="lodepng.cu" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Test_1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="lodepng.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lodepng.h" />

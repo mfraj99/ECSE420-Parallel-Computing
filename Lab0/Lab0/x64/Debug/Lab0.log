@@ -1,24 +1,45 @@
-﻿  lodepng.c
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(773,34): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(1437,29): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(1441,31): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(1479,88): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(1513,86): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(1461,1): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(3441,54): warning C4267: 'function': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(3435,1): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(4244,75): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(4292,41): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(4372,59): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.c(5312,1): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
+﻿  Compiling CUDA source file kernel.cu...
+  Compiling CUDA source file lodepng.cu...
+  
+  D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin\nvcc.exe" -gencode=arch=compute_30,code=\"sm_30,compute_30\" --use-local-env -ccbin "D:\Program Files\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\bin\HostX86\x64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Fdx64\Debug\vc142.pdb /FS /Zi /RTC1 /MDd " -o x64\Debug\kernel.cu.obj "D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\kernel.cu" 
+  
+  D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin\nvcc.exe" -gencode=arch=compute_30,code=\"sm_30,compute_30\" --use-local-env -ccbin "D:\Program Files\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.29.30133\bin\HostX86\x64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Fdx64\Debug\vc142.pdb /FS /Zi /RTC1 /MDd " -o x64\Debug\lodepng.cu.obj "D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\Lab0\lodepng.cu" 
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(63): warning : conversion from a string literal to "char *" is deprecated
+  
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(63): warning : conversion from a string literal to "char *" is deprecated
+  
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(66): warning : variable "png_input" was declared but never referenced
+  
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(67): warning : variable "png_output" was declared but never referenced
+  
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(70): warning : variable "error" was declared but never referenced
+  
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(71): warning : variable "image" was declared but never referenced
+  
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(72): warning : variable "width" was declared but never referenced
+  
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(72): warning : variable "height" was declared but never referenced
+  
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(63): warning : conversion from a string literal to "char *" is deprecated
+  
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(63): warning : conversion from a string literal to "char *" is deprecated
+  
+  kernel.cu
+  lodepng.cu
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(40): warning C4018: '<': signed/unsigned mismatch
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(41): warning C4018: '<': signed/unsigned mismatch
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(72): warning C4101: 'height': unreferenced local variable
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(72): warning C4101: 'width': unreferenced local variable
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/kernel.cu(70): warning C4101: 'error': unreferenced local variable
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/lodepng.cu(773): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/lodepng.cu(1437): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/lodepng.cu(1441): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/lodepng.cu(1513): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/lodepng.cu(3435): warning C4334: '<<': result of 32-bit shift implicitly converted to 64 bits (was 64-bit shift intended?)
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/lodepng.cu(3441): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/lodepng.cu(4244): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/lodepng.cu(4292): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/lodepng.cu(4372): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
+D:/Documents/University/fall2021/ECSE420/ECSE420-Parallel-Computing/Lab0/Lab0/lodepng.cu(5312): warning C4267: 'initializing': conversion from 'size_t' to 'unsigned int', possible loss of data
      Creating library D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\x64\Debug\Lab0.lib and object D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\x64\Debug\Lab0.exp
-kernel.cu.obj : error LNK2019: unresolved external symbol "unsigned int __cdecl lodepng_decode32_file(unsigned char * *,unsigned int *,unsigned int *,char const *)" (?lodepng_decode32_file@@YAIPEAPEAEPEAI1PEBD@Z) referenced in function "void __cdecl process(char *,char *)" (?process@@YAXPEAD0@Z)
-    Hint on symbols that are defined and could potentially match:
-      lodepng_decode32_file
-kernel.cu.obj : error LNK2019: unresolved external symbol "unsigned int __cdecl lodepng_encode32_file(char const *,unsigned char const *,unsigned int,unsigned int)" (?lodepng_encode32_file@@YAIPEBDPEBEII@Z) referenced in function "void __cdecl process(char *,char *)" (?process@@YAXPEAD0@Z)
-    Hint on symbols that are defined and could potentially match:
-      lodepng_encode32_file
-kernel.cu.obj : error LNK2019: unresolved external symbol "char const * __cdecl lodepng_error_text(unsigned int)" (?lodepng_error_text@@YAPEBDI@Z) referenced in function "void __cdecl process(char *,char *)" (?process@@YAXPEAD0@Z)
-    Hint on symbols that are defined and could potentially match:
-      lodepng_error_text
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\x64\Debug\Lab0.exe : fatal error LNK1120: 3 unresolved externals
+  Lab0.vcxproj -> D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0\x64\Debug\Lab0.exe
