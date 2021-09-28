@@ -10,90 +10,121 @@
 // input - pointer to array of pixels of input image
 // output - pointer to array of pixels for output image
 // n - limit of the numebr of threads
-__global__ void rectification(unsigned char* input, unsigned char* output, int n)
+__global__ void rectification(unsigned char* input, unsigned char* output, int n, int width, int height)
 {
-    int i = threadIdx.x;
-    if (i < n) {
-        if ((int)input[i] < 127) {
-            output[i] = (unsigned char)127;
-        }
-        else {
-            output[i] = input[i];
-        }
-    }
-}
+    int index = threadIdx.x + blockIdx.x * blockDim.x;
 
-void process(char* input_filename, char* output_filename)
-{
-    printf("process lmao");
-
-    unsigned error;
-    unsigned char* image, * new_image;
-    unsigned width, height;
-
-    error = lodepng_decode32_file(&image, &width, &height, input_filename);
-    if (error) printf("error %u: %s\n", error, lodepng_error_text(error));
-    new_image = (unsigned char*)malloc(width * height * 4 * sizeof(unsigned char));
-
-    // process image
-    unsigned char value;
-    for (int i = 0; i < height; i++) {
+    if (index < n) {
         for (int j = 0; j < width; j++) {
+            int png_index = 4 * width * index + 4 * j;
 
-            value = image[4 * width * i + 4 * j];
+            if ((int)input[png_index] < 127) {
+                output[png_index] = (unsigned char)127;
+            }
+            else {
+                output[png_index] = input[png_index];
+            }
 
-            new_image[4 * width * i + 4 * j + 0] = value; // R
-            new_image[4 * width * i + 4 * j + 1] = value; // G
-            new_image[4 * width * i + 4 * j + 2] = value; // B
-            new_image[4 * width * i + 4 * j + 3] = image[4 * width * i + 4 * j + 3]; // A
+            if ((int)input[png_index + 1] < 127) {
+                output[png_index + 1] = (unsigned char)127;
+            }
+            else {
+                output[png_index + 1] = input[png_index + 1];
+            }
+
+            if ((int)input[png_index + 2] < 127) {
+                output[png_index + 2] = (unsigned char)127;
+            }
+            else {
+                output[png_index + 2] = input[png_index + 2];
+            }
+
+            output[png_index + 3] = input[png_index + 3];
         }
     }
-
-    lodepng_encode32_file(output_filename, new_image, width, height);
-
-    free(image);
-    free(new_image);
+        
 }
 
 int main(int argc, char** argv)
 {
 
-    printf("test lmao");
+    char* png_input = "Test_1.png";
+    char* png_output = "output.png";
+    int thread_number = 32;
 
-    process("Test_1.png", "output.png");
+    unsigned error;
+    unsigned char* image = 0;
+    unsigned width, height;
 
-    if (strcmp(argv[0], "rectify") == 0) {
+    error = lodepng_decode32_file(&image, &width, &height, png_input);
+    if (error) printf("error %u: %s\n", error, lodepng_error_text(error));
+    unsigned char* new_image = (unsigned char*)malloc(width * height * 4 * sizeof(unsigned char));
+    unsigned char* final_image = (unsigned char*)malloc(width * height * 4 * sizeof(unsigned char));
+
+    cudaMallocManaged((void**)&image, width * height * 4 * sizeof(unsigned char));
+    cudaMallocManaged((void**)&new_image, width * height * 4 * sizeof(unsigned char));
+
+    int threads_per_block = width*height/thread_number;
+
+    rectification <<< (height+threads_per_block-1)/threads_per_block, threads_per_block >>> (image, new_image, height, width, height);
+
+    cudaDeviceSynchronize();
+
+    //testing sequential version of rectification algorithm
+
+    //unsigned char zero = (unsigned char)127;
+
+    //for (int i = 0; i < height; i++) {
+    //    for (int j = 0; j < width; j++) {	
+    //    
+    //        int index = 4 * i * width + 4 * j;
+    //        printf("%d", (int)image[index]);
+    //        printf("%u", (unsigned)image[index]);
+
+    //        if ((int)image[index] < 127) {
+    //            new_image[index] = zero;
+    //        }
+    //        else {
+    //            new_image[index] = image[index];
+    //        }
+
+    //        if ((int)image[index + 1] < 127) {
+    //            new_image[index + 1] = zero;
+    //        }
+    //        else {
+    //            new_image[index + 1] = image[index + 1];
+    //        }
+
+    //        if ((int)image[index + 2] < 127) {
+    //            new_image[index + 2] = zero;
+    //        }
+    //        else {
+    //            new_image[index + 2] = image[index + 2];
+    //        }
+
+    //        new_image[index + 3] = image[index + 3];
+    //    }
+    //}
+
+    //cudaMemcpy(final_image, new_image, width * height * 4 * sizeof(unsigned char), cudaMemcpyDeviceToHost);
+
+    lodepng_encode32_file(png_output, new_image, width, height);
+
+    cudaFree(image);
+    cudaFree(new_image);
+
+    /*free(image);
+    free(new_image);*/
+
+   /* if (strcmp(argv[0], "rectify") == 0) {
         char* png_input = argv[1];
         char* png_output = argv[2];
         int thread_number = atoi(argv[3]);
 
-        unsigned error;
-        unsigned char* image = 0;
-        unsigned width, height;
-
-        //process(png_input, png_output);
-
-        /*cudaMallocManaged((void**)&image, width * height * 4 * sizeof(unsigned char));
-        cudaMallocManaged((void**)&new_image, width * height * 4 * sizeof(unsigned char));
-
-        error = lodepng_decode32_file(&image, &width, &height, png_input);
-        if (error) printf("error %u: %s\n", error, lodepng_error_text(error));
-        new_image = (unsigned char*)malloc(width * height * 4 * sizeof(unsigned char));
-
-        rectification << < 1, thread_number >> > (image, new_image, thread_number);
-
-        cudaDeviceSynchronize();
-
-        lodepng_encode32_file(png_output, new_image, width, height);
-
-        cudaFree(image);
-        cudaFree(new_image);
-
-        free(image);
-        free(new_image);*/
+        
 
         return 0;
-    }
+    }*/
 
     return 0;
 }
