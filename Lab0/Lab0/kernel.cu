@@ -53,22 +53,35 @@ int main(int argc, char** argv)
     int thread_number = 32;
 
     unsigned error;
-    unsigned char* image = 0;
+    unsigned char* image;
+    unsigned char* image_cuda;
+    unsigned char* new_image_cuda;
     unsigned width, height;
 
     error = lodepng_decode32_file(&image, &width, &height, png_input);
     if (error) printf("error %u: %s\n", error, lodepng_error_text(error));
-    unsigned char* new_image = (unsigned char*)malloc(width * height * 4 * sizeof(unsigned char));
-    unsigned char* final_image = (unsigned char*)malloc(width * height * 4 * sizeof(unsigned char));
 
-    cudaMallocManaged((void**)&image, width * height * 4 * sizeof(unsigned char));
-    cudaMallocManaged((void**)&new_image, width * height * 4 * sizeof(unsigned char));
+    cudaMallocManaged(&image_cuda, width * height * 4 * sizeof(unsigned char));
+    cudaMallocManaged(&new_image_cuda, width * height * 4 * sizeof(unsigned char));
 
-    int threads_per_block = width*height/thread_number;
+    error = lodepng_decode32_file(&image_cuda, &width, &height, png_input);
+    if (error) printf("error %u: %s\n", error, lodepng_error_text(error));
 
-    rectification <<< (height+threads_per_block-1)/threads_per_block, threads_per_block >>> (image, new_image, height, width, height);
+    //memcpy(image_cuda, image, width * height * 4 * sizeof(unsigned char));
+
+    for (int i = 0; i < 100; i++) {
+        printf("lel:%u%u\n", (unsigned)image[i], (unsigned)image_cuda[i]);
+    }
+
+    int threads_per_block = height/thread_number;
+
+    rectification <<< (height+threads_per_block-1)/threads_per_block, threads_per_block >>> (image_cuda, new_image_cuda, height, width, height);
 
     cudaDeviceSynchronize();
+    
+    /*for (int i = 0; i < 100; i++) {
+        printf("lol:%u%u\n", (unsigned)image[i], (unsigned)new_image_cuda[i]);
+    }*/
 
     //testing sequential version of rectification algorithm
 
@@ -108,10 +121,10 @@ int main(int argc, char** argv)
 
     //cudaMemcpy(final_image, new_image, width * height * 4 * sizeof(unsigned char), cudaMemcpyDeviceToHost);
 
-    lodepng_encode32_file(png_output, new_image, width, height);
+    lodepng_encode32_file(png_output, new_image_cuda, width, height);
 
-    cudaFree(image);
-    cudaFree(new_image);
+    cudaFree(image_cuda);
+    cudaFree(new_image_cuda);
 
     /*free(image);
     free(new_image);*/
