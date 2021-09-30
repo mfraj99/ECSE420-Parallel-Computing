@@ -10,39 +10,42 @@
 // input - pointer to array of pixels of input image
 // output - pointer to array of pixels for output image
 // n - limit of the numebr of threads
-__global__ void rectification(unsigned char* input, unsigned char* output, int n, int width, int height)
+__global__ void rectification(unsigned char* input, unsigned char* output, int height, int width, int n)
 {
+    //int i = threadIdx.x + blockIdx.x * blockDim.x;
+    //int j = threadIdx.y + blockIdx.x * blockDim.y;
+     
+    //int png_index = 4*width*j + 4*i;
+    //int png_index = 4 * width * threadIdx.x + 4 * blockIdx.x * blockDim.x;
     int index = threadIdx.x + blockIdx.x * blockDim.x;
-
+    int i = index % height;
+    int j = index % width;
     if (index < n) {
-        for (int j = 0; j < width; j++) {
-            int png_index = 4 * width * index + 4 * j;
-
-            if ((int)input[png_index] < 127) {
-                output[png_index] = (unsigned char)127;
-            }
-            else {
-                output[png_index] = input[png_index];
-            }
-
-            if ((int)input[png_index + 1] < 127) {
-                output[png_index + 1] = (unsigned char)127;
-            }
-            else {
-                output[png_index + 1] = input[png_index + 1];
-            }
-
-            if ((int)input[png_index + 2] < 127) {
-                output[png_index + 2] = (unsigned char)127;
-            }
-            else {
-                output[png_index + 2] = input[png_index + 2];
-            }
-
-            output[png_index + 3] = input[png_index + 3];
+        int png_index = 4 * i * width + 4 * j;
+        if ((int)input[png_index] < 127) {
+            output[png_index] = (unsigned char)127;
         }
+        else {
+            output[png_index] = input[png_index];
+        }
+
+        if ((int)input[png_index + 1] < 127) {
+            output[png_index + 1] = (unsigned char)127;
+        }
+        else {
+            output[png_index + 1] = input[png_index + 1];
+        }
+
+        if ((int)input[png_index + 2] < 127) {
+            output[png_index + 2] = (unsigned char)127;
+        }
+        else {
+            output[png_index + 2] = input[png_index + 2];
+        }
+
+        output[png_index + 3] = input[png_index + 3];
     }
-        
+      
 }
 
 int main(int argc, char** argv)
@@ -53,31 +56,40 @@ int main(int argc, char** argv)
     int thread_number = 32;
 
     unsigned error;
-    unsigned char* image;
+    unsigned char* final_image = new unsigned char[3840 * 2400 * 4]();
+    unsigned char* image_host;
     unsigned char* image_cuda;
     unsigned char* new_image_cuda;
     unsigned width, height;
+    unsigned* width_cuda;
+    unsigned* height_cuda;
 
-    error = lodepng_decode32_file(&image, &width, &height, png_input);
+    cudaMalloc((void**)&image_cuda, 3840 * 2400 * 4 * sizeof(unsigned char));
+    cudaMalloc((void**)&new_image_cuda, 3840 * 2400 * 4 * sizeof(unsigned char));
+
+    error = lodepng_decode32_file(&image_host, &width, &height, png_input);
     if (error) printf("error %u: %s\n", error, lodepng_error_text(error));
 
-    cudaMallocManaged(&image_cuda, width * height * 4 * sizeof(unsigned char));
-    cudaMallocManaged(&new_image_cuda, width * height * 4 * sizeof(unsigned char));
-
-    error = lodepng_decode32_file(&image_cuda, &width, &height, png_input);
-    if (error) printf("error %u: %s\n", error, lodepng_error_text(error));
+    cudaMemcpy(image_cuda, image_host, width * height * 4 * sizeof(unsigned char), cudaMemcpyHostToDevice);
 
     //memcpy(image_cuda, image, width * height * 4 * sizeof(unsigned char));
+    int  number_of_blocks = (width * height / thread_number);
+    dim3 grid(number_of_blocks, 1, 1);
+    dim3 block(thread_number, 1, 1);
 
-    for (int i = 0; i < 100; i++) {
-        printf("lel:%u%u\n", (unsigned)image[i], (unsigned)image_cuda[i]);
-    }
-
-    int threads_per_block = height/thread_number;
-
-    rectification <<< (height+threads_per_block-1)/threads_per_block, threads_per_block >>> (image_cuda, new_image_cuda, height, width, height);
-
+    rectification <<<grid, block>>> (image_cuda, new_image_cuda, height, width, height*width);
     cudaDeviceSynchronize();
+    cudaMemcpy(final_image, new_image_cuda, 3840 * 2400 * 4 * sizeof(unsigned char), cudaMemcpyDeviceToHost);
+
+    /*for (int i = 0; i < 100; i++) {
+        printf("lel:%u%u\n", (unsigned)image[i], (unsigned)image_cuda[i]);
+    }*/
+
+   
+
+   // rectification <<< (height+threads_per_block-1)/threads_per_block, threads_per_block >>> (image_cuda, new_image_cuda, height, width, height);
+
+    
     
     /*for (int i = 0; i < 100; i++) {
         printf("lol:%u%u\n", (unsigned)image[i], (unsigned)new_image_cuda[i]);
@@ -120,9 +132,11 @@ int main(int argc, char** argv)
     //}
 
     //cudaMemcpy(final_image, new_image, width * height * 4 * sizeof(unsigned char), cudaMemcpyDeviceToHost);
-
-    lodepng_encode32_file(png_output, new_image_cuda, width, height);
-
+    //memcpy(image, new_image_cuda, width * height * 4 * sizeof(unsigned char));
+    for (int i = 0; i < 100; i++) {
+        printf("lol:%u%u\n", (unsigned)image_host[i], (unsigned)final_image[i]);
+    }
+    lodepng_encode32_file(png_output, final_image, width, height);
     cudaFree(image_cuda);
     cudaFree(new_image_cuda);
 
