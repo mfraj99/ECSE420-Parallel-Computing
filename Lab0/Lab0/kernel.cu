@@ -18,10 +18,9 @@ __global__ void rectification(unsigned char* input, unsigned char* output, int h
     //int png_index = 4*width*j + 4*i;
     //int png_index = 4 * width * threadIdx.x + 4 * blockIdx.x * blockDim.x;
     int index = threadIdx.x + blockIdx.x * blockDim.x;
-    int i = index % height;
-    int j = index % width;
+    //printf("%u %u", i, j);
     if (index < n) {
-        int png_index = 4 * i * width + 4 * j;
+        int png_index = 4 * index;
         if ((int)input[png_index] < 127) {
             output[png_index] = (unsigned char)127;
         }
@@ -133,9 +132,9 @@ int main(int argc, char** argv)
 
     //cudaMemcpy(final_image, new_image, width * height * 4 * sizeof(unsigned char), cudaMemcpyDeviceToHost);
     //memcpy(image, new_image_cuda, width * height * 4 * sizeof(unsigned char));
-    for (int i = 0; i < 100; i++) {
+    /*for (int i = 0; i < 100; i++) {
         printf("lol:%u%u\n", (unsigned)image_host[i], (unsigned)final_image[i]);
-    }
+    }*/
     lodepng_encode32_file(png_output, final_image, width, height);
     cudaFree(image_cuda);
     cudaFree(new_image_cuda);
