@@ -1,6 +1,0 @@
-﻿  lodepng.c
-  test_equality.c
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0Testing\Tests\Tests\test_equality.c(24,21): warning C4018: '<': signed/unsigned mismatch
-D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0Testing\Tests\Tests\test_equality.c(30,39): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-  Generating Code...
-  Tests.vcxproj -> D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab0Testing\Tests\Debug\Tests.exe
