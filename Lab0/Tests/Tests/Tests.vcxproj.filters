@@ -28,9 +28,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="output.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="Test_1.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -44,6 +41,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="Test_3.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="output_pooled.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="output_rectified.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

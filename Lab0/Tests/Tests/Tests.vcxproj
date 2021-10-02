@@ -146,7 +146,8 @@
     <ClInclude Include="lodepng.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="output.png" />
+    <Image Include="output_pooled.png" />
+    <Image Include="output_rectified.png" />
     <Image Include="Test_1.png" />
     <Image Include="Test_1_pooled.png" />
     <Image Include="Test_1_rectified.png" />
