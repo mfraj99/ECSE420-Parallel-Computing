@@ -82,6 +82,8 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Test_1.png" />
+    <Image Include="Test_2.png" />
+    <Image Include="Test_3.png" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gputimer.h" />
