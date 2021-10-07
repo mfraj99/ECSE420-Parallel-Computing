@@ -1,121 +1,144 @@
+//Written by Shi Tong Li and Michael Frajman ECSE420 Fal2021
 
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
+#include "gputimer.h"
 #include <stdio.h>
+#include <stdlib.h>
 
-cudaError_t addWithCuda(int *c, const int *a, const int *b, unsigned int size);
+#define AND     0
+#define OR      1
+#define NAND    2
+#define NOR     3
+#define XOR     4
+#define XNOR    5
 
-__global__ void addKernel(int *c, const int *a, const int *b)
+
+
+__global__ void logic_gates(int* input1_array, int* input2_array, int* gate_array, int* output, int n)
 {
-    int i = threadIdx.x;
-    c[i] = a[i] + b[i];
+
+    int index = threadIdx.x + blockIdx.x * blockDim.x;
+    if (index < n) {
+        int bit;
+        int input1 = input1_array[index];
+        int input2 = input2_array[index];
+        int gate = gate_array[index];
+        switch (gate) {
+        case AND:
+            bit = input1 & input2;
+            break;
+        case OR:
+            bit = input1 | input2;
+            break;
+        case NAND:
+            bit = !(input1 & input2);
+            break;
+        case NOR:
+            bit = !(input1 | input2);
+            break;
+        case XOR:
+            if ((input1 == 0 && input2 == 1) || (input1 == 1 && input2 == 0)) {
+                bit = 1;
+            }
+            else {
+                bit = 0;
+            }
+            break;
+        case XNOR:
+            if ((input1 == 0 && input2 == 0) || (input1 == 1 && input2 == 1)) {
+                bit = 1;
+            }
+            else {
+                bit = 0;
+            }
+            break;
+        }
+        output[index] = bit;
+    }
+
 }
 
 int main()
 {
-    const int arraySize = 5;
-    const int a[arraySize] = { 1, 2, 3, 4, 5 };
-    const int b[arraySize] = { 10, 20, 30, 40, 50 };
-    int c[arraySize] = { 0 };
+    FILE* input, * output;
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+    //HARD CODED VARIABLES FOR INPUT OUTPUT
+    input = fopen("input_10000.txt", "r");
+    output = fopen("output_10000.txt", "w");
+    int thread_number = 1024;
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
 
-    // Add vectors in parallel.
-    cudaError_t cudaStatus = addWithCuda(c, a, b, arraySize);
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "addWithCuda failed!");
-        return 1;
+
+    //count how many lines are there in the program, taken from https://stackoverflow.com/questions/12733105/c-function-that-counts-lines-in-file
+    int number_of_lines = 0;
+    while (!feof(input)) {
+        char ch = fgetc(input);
+        if (ch == '\n') {
+            number_of_lines++;
+        }
+    }
+    rewind(input);
+    char line[10];
+
+    //declaring variables used 
+    unsigned error;
+    int* input1_unified;
+    int* input2_unified;
+    int* gate_unified;
+    int* output_unified;
+
+
+    
+
+
+
+    //allocating gpu memory
+    cudaMallocManaged((void**)&input1_unified, number_of_lines * sizeof(int));
+    cudaMallocManaged((void**)&input2_unified, number_of_lines * sizeof(int));
+    cudaMallocManaged((void**)&gate_unified, number_of_lines * sizeof(int));
+    cudaMallocManaged((void**)&output_unified, number_of_lines * sizeof(int));
+
+    //calculating the number of blocks needed, the grid, and block size
+    int  number_of_blocks = (number_of_lines / thread_number) + 1;
+    dim3 grid(number_of_blocks, 1, 1);
+    dim3 block(thread_number, 1, 1);
+
+    for (int i = 0; i < number_of_lines; i++) {
+        fgets(line, sizeof(line), input);
+        input1_unified[i] = (int)(line[0] - '0');
+        input2_unified[i] = (int)(line[2] - '0');
+        gate_unified[i] = (int)(line[4] - '0');
+
     }
 
-    printf("{1,2,3,4,5} + {10,20,30,40,50} = {%d,%d,%d,%d,%d}\n",
-        c[0], c[1], c[2], c[3], c[4]);
+    //timer for test
+    struct GpuTimer timer;
+    timer.Start();
 
-    // cudaDeviceReset must be called before exiting in order for profiling and
-    // tracing tools such as Nsight and Visual Profiler to show complete traces.
-    cudaStatus = cudaDeviceReset();
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaDeviceReset failed!");
-        return 1;
+    //calling the rectification function on the gpu
+    logic_gates <<< grid, block >>> (input1_unified, input2_unified, gate_unified, output_unified, number_of_lines);
+    timer.Stop();
+    printf("timer: %f", timer.Elapsed());
+    cudaDeviceSynchronize();
+
+    
+    for (int i = 0; i < number_of_lines; i++) {
+        fprintf(output, "%d\n", output_unified[i]);
     }
+    fclose(input);
+    fclose(output);
+    cudaFree(input1_unified);
+    cudaFree(input2_unified);
+    cudaFree(gate_unified);
+    cudaFree(output_unified);
 
     return 0;
-}
-
-// Helper function for using CUDA to add vectors in parallel.
-cudaError_t addWithCuda(int *c, const int *a, const int *b, unsigned int size)
-{
-    int *dev_a = 0;
-    int *dev_b = 0;
-    int *dev_c = 0;
-    cudaError_t cudaStatus;
-
-    // Choose which GPU to run on, change this on a multi-GPU system.
-    cudaStatus = cudaSetDevice(0);
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaSetDevice failed!  Do you have a CUDA-capable GPU installed?");
-        goto Error;
-    }
-
-    // Allocate GPU buffers for three vectors (two input, one output)    .
-    cudaStatus = cudaMalloc((void**)&dev_c, size * sizeof(int));
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaMalloc failed!");
-        goto Error;
-    }
-
-    cudaStatus = cudaMalloc((void**)&dev_a, size * sizeof(int));
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaMalloc failed!");
-        goto Error;
-    }
-
-    cudaStatus = cudaMalloc((void**)&dev_b, size * sizeof(int));
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaMalloc failed!");
-        goto Error;
-    }
-
-    // Copy input vectors from host memory to GPU buffers.
-    cudaStatus = cudaMemcpy(dev_a, a, size * sizeof(int), cudaMemcpyHostToDevice);
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaMemcpy failed!");
-        goto Error;
-    }
-
-    cudaStatus = cudaMemcpy(dev_b, b, size * sizeof(int), cudaMemcpyHostToDevice);
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaMemcpy failed!");
-        goto Error;
-    }
-
-    // Launch a kernel on the GPU with one thread for each element.
-    addKernel<<<1, size>>>(dev_c, dev_a, dev_b);
-
-    // Check for any errors launching the kernel
-    cudaStatus = cudaGetLastError();
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "addKernel launch failed: %s\n", cudaGetErrorString(cudaStatus));
-        goto Error;
-    }
-    
-    // cudaDeviceSynchronize waits for the kernel to finish, and returns
-    // any errors encountered during the launch.
-    cudaStatus = cudaDeviceSynchronize();
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaDeviceSynchronize returned error code %d after launching addKernel!\n", cudaStatus);
-        goto Error;
-    }
-
-    // Copy output vector from GPU buffer to host memory.
-    cudaStatus = cudaMemcpy(c, dev_c, size * sizeof(int), cudaMemcpyDeviceToHost);
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaMemcpy failed!");
-        goto Error;
-    }
-
-Error:
-    cudaFree(dev_c);
-    cudaFree(dev_a);
-    cudaFree(dev_b);
-    
-    return cudaStatus;
 }
