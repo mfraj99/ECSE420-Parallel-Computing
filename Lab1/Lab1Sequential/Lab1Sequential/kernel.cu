@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//definitions of the logic gates
 #define AND     0
 #define OR      1
 #define NAND    2
@@ -18,8 +19,17 @@
 int main()
 {
     FILE* input, * output;
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+    //HARD CODED VARIABLES FOR INPUT OUTPUT
     input = fopen("input_10000.txt", "r");
     output = fopen("output_10000.txt", "w");
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////
 
     //count how many lines are there in the program, taken from https://stackoverflow.com/questions/12733105/c-function-that-counts-lines-in-file
     int number_of_lines = 0;
@@ -29,9 +39,12 @@ int main()
             number_of_lines++;
         }
     }
+
+    //input points to beginning
     rewind(input);
     char line[10];
     
+    //for each line, get the inputs and the gate
     for (int i = 0; i < number_of_lines; i++) {
         fgets(line, sizeof(line), input);
         int input1 = (int)(line[0]-'0');
@@ -39,6 +52,7 @@ int main()
         int gate = (int)(line[4]-'0');
 
         int bit;
+        //do the corresponding logic operation dictated by the gate
         switch (gate) {
         case AND:
             bit = input1 & input2;
@@ -69,8 +83,10 @@ int main()
             }
             break;
         }
+        //write result bit to output file
         fprintf(output, "%d\n", bit);
     }
+    //close both files
     fclose(input);
     fclose(output);
     return 0;

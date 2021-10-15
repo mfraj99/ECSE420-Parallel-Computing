@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//definition of the logic gates
 #define AND     0
 #define OR      1
 #define NAND    2
@@ -15,16 +16,23 @@
 #define XNOR    5
 
 
-
+// do logic gate operation on two input arrays
+// input1_array - pointer to array of binary values of input1
+// input2_array - pointer to array of binary values of input2
+// gate_array - pointer to array of values of gate
+// output - pointer to array of binary values of the resulting output
+// n - limit of the numebr of threads
 __global__ void logic_gates(int* input1_array, int *input2_array, int *gate_array, int *output, int n)
 {
-
+    //calculate the index of the current thread
     int index = threadIdx.x + blockIdx.x * blockDim.x;
     if (index < n) {
+        //get the input1, input2, and gate value for the corresponding index
         int bit;
         int input1 = input1_array[index];
         int input2 = input2_array[index];
         int gate = gate_array[index];
+        //do operation depending on the value of the gate
         switch (gate) {
         case AND:
             bit = input1 & input2;
@@ -55,6 +63,7 @@ __global__ void logic_gates(int* input1_array, int *input2_array, int *gate_arra
             }
             break;
         }
+        //write resulting bit to the output array with the correct index
         output[index] = bit;
     }
 
@@ -85,6 +94,7 @@ int main()
             number_of_lines++;
         }
     }
+    //make input point to the beginning of file
     rewind(input);
     char line[10];
 
@@ -99,7 +109,7 @@ int main()
     int* gate_cuda;
     int* output_cuda;
 
-    
+    //parse the input1, input2, and gate values and store them in arrays
     for (int i = 0; i < number_of_lines; i++) {
         fgets(line, sizeof(line), input);
         input1_host[i] = (int)(line[0]-'0');
@@ -115,7 +125,7 @@ int main()
     cudaMalloc((void**)&input2_cuda, number_of_lines * sizeof(int));
     cudaMalloc((void**)&gate_cuda, number_of_lines * sizeof(int));
     cudaMalloc((void**)&output_cuda, number_of_lines * sizeof(int));
-    //copying png information onto the gpu
+    //copying input information onto the gpu
     cudaMemcpy(input1_cuda, input1_host, number_of_lines * sizeof(int), cudaMemcpyHostToDevice);
     cudaMemcpy(input2_cuda, input2_host, number_of_lines * sizeof(int), cudaMemcpyHostToDevice);
     cudaMemcpy(gate_cuda, gate_host, number_of_lines * sizeof(int), cudaMemcpyHostToDevice);
@@ -128,7 +138,7 @@ int main()
     struct GpuTimer timer;
     timer.Start();
 
-    //calling the rectification function on the gpu
+    //calling the logic gate function on the gpu
     logic_gates <<<grid, block >>> (input1_cuda, input2_cuda, gate_cuda, output_cuda, number_of_lines);
     timer.Stop();
     printf("timer: %f", timer.Elapsed());
@@ -138,6 +148,7 @@ int main()
     int *output_host = new int[number_of_lines]();
     //copying the gpu output onto the host machine
     cudaMemcpy(output_host, output_cuda,number_of_lines* sizeof(int), cudaMemcpyDeviceToHost);
+    //write back the output of the gpu function (stored in an array) to the output file
     for (int i = 0; i < number_of_lines; i++) {
         fprintf(output, "%d\n", output_host[i]);
     }
