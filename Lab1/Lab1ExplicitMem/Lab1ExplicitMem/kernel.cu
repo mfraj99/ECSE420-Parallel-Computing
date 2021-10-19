@@ -77,8 +77,8 @@ int main()
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
     //HARD CODED VARIABLES FOR INPUT OUTPUT
-    input = fopen("input_10000.txt", "r");
-    output = fopen("output_10000.txt", "w");
+    input = fopen("input_1000000.txt", "r");
+    output = fopen("output_1000000.txt", "w");
     int thread_number = 1024;
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,8 @@ int main()
         
     }
     
-
+    struct GpuTimer timer2;
+    timer2.Start();
     
     //allocating gpu memory
     cudaMalloc((void**)&input1_cuda, number_of_lines*sizeof(int));
@@ -129,19 +130,23 @@ int main()
     cudaMemcpy(input1_cuda, input1_host, number_of_lines * sizeof(int), cudaMemcpyHostToDevice);
     cudaMemcpy(input2_cuda, input2_host, number_of_lines * sizeof(int), cudaMemcpyHostToDevice);
     cudaMemcpy(gate_cuda, gate_host, number_of_lines * sizeof(int), cudaMemcpyHostToDevice);
+    
+    timer2.Stop();
+    printf("Memorytimer: %f\n", timer2.Elapsed());
+    
     //calculating the number of blocks needed, the grid, and block size
     int  number_of_blocks = (number_of_lines / thread_number)+1;
     dim3 grid(number_of_blocks, 1, 1);
     dim3 block(thread_number, 1, 1);
 
     //timer for test
-    struct GpuTimer timer;
-    timer.Start();
+    struct GpuTimer timer1;
+    timer1.Start();
 
     //calling the logic gate function on the gpu
     logic_gates <<<grid, block >>> (input1_cuda, input2_cuda, gate_cuda, output_cuda, number_of_lines);
-    timer.Stop();
-    printf("timer: %f", timer.Elapsed());
+    timer1.Stop();
+    printf("GPUtimer: %f", timer1.Elapsed());
     cudaDeviceSynchronize();
 
     //declaring variable to store the gpu output onto the host machine

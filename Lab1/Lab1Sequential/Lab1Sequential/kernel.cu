@@ -24,8 +24,8 @@ int main()
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
     //HARD CODED VARIABLES FOR INPUT OUTPUT
-    input = fopen("input_10000.txt", "r");
-    output = fopen("output_10000.txt", "w");
+    input = fopen("input_1000000.txt", "r");
+    output = fopen("output_1000000.txt", "w");
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
@@ -43,6 +43,9 @@ int main()
     //input points to beginning
     rewind(input);
     char line[10];
+
+    struct GpuTimer timer;
+    timer.Start();
     
     //for each line, get the inputs and the gate
     for (int i = 0; i < number_of_lines; i++) {
@@ -86,6 +89,9 @@ int main()
         //write result bit to output file
         fprintf(output, "%d\n", bit);
     }
+    timer.Stop();
+    printf("timer: %f", timer.Elapsed());
+
     //close both files
     fclose(input);
     fclose(output);

@@ -77,8 +77,8 @@ int main()
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
     //HARD CODED VARIABLES FOR INPUT OUTPUT
-    input = fopen("input_10000.txt", "r");
-    output = fopen("output_10000.txt", "w");
+    input = fopen("input_100000.txt", "r");
+    output = fopen("output_100000.txt", "w");
     int thread_number = 1024;
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
@@ -105,11 +105,17 @@ int main()
     int* gate_unified;
     int* output_unified;
 
+    struct GpuTimer timer2;
+    timer2.Start();
+
     //allocating gpu memory unified
     cudaMallocManaged((void**)&input1_unified, number_of_lines * sizeof(int));
     cudaMallocManaged((void**)&input2_unified, number_of_lines * sizeof(int));
     cudaMallocManaged((void**)&gate_unified, number_of_lines * sizeof(int));
     cudaMallocManaged((void**)&output_unified, number_of_lines * sizeof(int));
+
+    timer2.Stop();
+    printf("Memorytimer: %f\n", timer2.Elapsed());
 
     //calculating the number of blocks needed, the grid, and block size
     int  number_of_blocks = (number_of_lines / thread_number) + 1;
@@ -132,7 +138,7 @@ int main()
     //calling the logic gate function on the gpu
     logic_gates <<< grid, block >>> (input1_unified, input2_unified, gate_unified, output_unified, number_of_lines);
     timer.Stop();
-    printf("timer: %f", timer.Elapsed());
+    printf("GPUtimer: %f", timer.Elapsed());
     cudaDeviceSynchronize();
 
     //write back the output of the gpu function (stored in an array) to the output file
