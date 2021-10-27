@@ -118,7 +118,7 @@ int main()
         
     }
     
-    struct GpuTimer timer2;
+    struct GpuTimer timer2; //time copying memory to device
     timer2.Start();
     
     //allocating gpu memory
@@ -146,13 +146,21 @@ int main()
     //calling the logic gate function on the gpu
     logic_gates <<<grid, block >>> (input1_cuda, input2_cuda, gate_cuda, output_cuda, number_of_lines);
     timer1.Stop();
-    printf("GPUtimer: %f", timer1.Elapsed());
+    printf("GPUtimer: %f\n", timer1.Elapsed());
     cudaDeviceSynchronize();
 
     //declaring variable to store the gpu output onto the host machine
     int *output_host = new int[number_of_lines]();
+
+    //struct GpuTimer timer3; //time copying memory back to host
+    //timer3.Start();
+
     //copying the gpu output onto the host machine
     cudaMemcpy(output_host, output_cuda,number_of_lines* sizeof(int), cudaMemcpyDeviceToHost);
+
+    //timer3.Stop();
+    //printf("Memorytimer: %f\n", timer2.Elapsed()+timer3.Elapsed()); //print the total time of copying memory to device and back to host
+
     //write back the output of the gpu function (stored in an array) to the output file
     for (int i = 0; i < number_of_lines; i++) {
         fprintf(output, "%d\n", output_host[i]);
