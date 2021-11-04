@@ -25,8 +25,12 @@ int main(int argc, char** argv)
     double element_grid[N * N] = { 0.0 };
     double element_grid_u1[N * N] = { 0.0 };
     double element_grid_u2[N * N] = { 0.0 };
+    //initiate drum hit
     element_grid_u1[(N * N / 2) + N/2] = 1;
+
+    //loop for number of iterations
     for (int i = 0; i < T; i++) {
+        //do interior element first
         for (int index = 0; index < N * N; index++) {
             int row = index / N + 1;
 
@@ -35,7 +39,7 @@ int main(int argc, char** argv)
             }
             
         }
-        
+        //do boundary without corners
         for (int index = 0; index < N * N; index++) {
             int row = index / N + 1;
             if (row == 1 && index % N != 0 && index % N != N - 1) {
@@ -51,14 +55,14 @@ int main(int argc, char** argv)
                 element_grid[index] = 0.75 * element_grid[index - 1];
             }
         }
-    
+        //do corners
         element_grid[0] = 0.75 * element_grid[N];
         element_grid[(N - 1) * N] = 0.75 * element_grid[(N - 1) * N - N];
         element_grid[N - 1] = 0.75 * element_grid[N - 1 - 1];
         element_grid[N * N - 1] = 0.75 * element_grid[N * N - 1 - 1];
-
+        //print required statement to terminal
         printf("\n (%d, %d): %f", N / 2, N / 2, element_grid[(N * N / 2) + N / 2]);
-        
+        //u1 becomes u1, and current values become u1
         memcpy(element_grid_u2, element_grid_u1, sizeof(element_grid_u2));
         memcpy(element_grid_u1, element_grid, sizeof(element_grid_u1));
     }
