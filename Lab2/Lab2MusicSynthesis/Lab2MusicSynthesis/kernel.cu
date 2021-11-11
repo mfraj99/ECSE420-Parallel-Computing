@@ -16,8 +16,8 @@ int main(int argc, char** argv)
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
     //HARD CODED VARIABLES FOR INPUT OUTPUT
-    int T = 4; //number of iterations
-    const int N = 4;
+    int T = 16; //number of iterations
+    const int N = 4; //side length of square grid
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
@@ -25,6 +25,9 @@ int main(int argc, char** argv)
     double element_grid[N * N] = { 0.0 };
     double element_grid_u1[N * N] = { 0.0 };
     double element_grid_u2[N * N] = { 0.0 };
+
+    struct GpuTimer timer;
+    timer.Start();
     //initiate drum hit
     element_grid_u1[(N * N / 2) + N/2] = 1;
 
@@ -60,6 +63,10 @@ int main(int argc, char** argv)
         element_grid[(N - 1) * N] = 0.75 * element_grid[(N - 1) * N - N];
         element_grid[N - 1] = 0.75 * element_grid[N - 1 - 1];
         element_grid[N * N - 1] = 0.75 * element_grid[N * N - 1 - 1];
+
+        timer.Stop();
+        printf("timer: %f", timer.Elapsed());
+
         //print required statement to terminal
         printf("\n (%d, %d): %f", N / 2, N / 2, element_grid[(N * N / 2) + N / 2]);
         //u1 becomes u1, and current values become u1

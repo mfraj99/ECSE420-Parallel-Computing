@@ -79,8 +79,9 @@ int main(int argc, char** argv)
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
     //HARD CODED VARIABLES FOR INPUT OUTPUT
-    int T =12; //number of iterations
+    int T = 16; //number of iterations
     const int N = 512;
+    int thread_number = 1024;
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
@@ -116,11 +117,13 @@ int main(int argc, char** argv)
 
     //loop for number of iterations
     //calculating the number of blocks needed, the grid, and block size
-    int thread_number = 1024;
     int  number_of_blocks = (int)sqrt(N*N/thread_number);
     int elements_per_thread = N * N / (thread_number * number_of_blocks);
     dim3 grid(number_of_blocks, 1, 1);
     dim3 block(thread_number, 1, 1);
+
+    struct GpuTimer timer;
+    timer.Start();
     for (int i = 0; i < T; i++) {
         //do interior element first
         
@@ -140,5 +143,8 @@ int main(int argc, char** argv)
         cudaMemcpy(cuda_grid_u2, cuda_grid_u1, N * N * sizeof(double), cudaMemcpyDeviceToDevice);
         cudaMemcpy(cuda_grid_u1, cuda_grid, N * N * sizeof(double), cudaMemcpyDeviceToDevice);
     }
+    timer.Stop();
+    printf("\ntimer: %f", timer.Elapsed());
+
     return 0;
 }

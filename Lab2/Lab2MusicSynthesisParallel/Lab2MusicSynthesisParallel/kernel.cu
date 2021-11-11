@@ -8,14 +8,7 @@
 #include <string.h>
 #include <math.h>
 
-
-
-//__global__ void drum_hit(double* element_grid_u1, int N, int n) {
-//    int index = threadIdx.x + blockIdx.x * blockDim.x;
-//    if (index == 0) {
-//        element_grid_u1[(N * N / 2) + N / 2] = 1;
-//    }
-//}
+//kernel for calculating interior of grid
 __global__ void update_interior(double *element_grid, double *element_grid_u1, double *element_grid_u2, int N, int n)
 {
     int index = threadIdx.x + blockIdx.x * blockDim.x;
@@ -28,6 +21,7 @@ __global__ void update_interior(double *element_grid, double *element_grid_u1, d
     
 }
 
+//kernel for calculating the edges of the grid
 __global__ void update_boundary(double* element_grid, int N, int n) {
     int index = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -46,8 +40,7 @@ __global__ void update_boundary(double* element_grid, int N, int n) {
     }
 }
 
-
-
+//kernel for calculating the corners of the grid
 __global__ void update_corners(double* element_grid, int N, int n) {
     int index = threadIdx.x + blockIdx.x * blockDim.x;
     if (index == 0) {
@@ -74,9 +67,9 @@ int main(int argc, char** argv)
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
     //HARD CODED VARIABLES FOR INPUT OUTPUT
-    int T = 4; //number of iterations
-    const int N = 4;
-    int thread_number = 1024;
+    int T = 16; //number of iterations
+    const int N = 4; //side length of grid
+    int thread_number = 16;
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////////////////////
@@ -90,16 +83,7 @@ int main(int argc, char** argv)
     double* cuda_grid_u1;
     double* cuda_grid_u2;
 
-    //allocating gpu memory unified
-    /*cudaMallocManaged((void**)&element_grid, N*N * sizeof(double));
-    cudaMallocManaged((void**)&element_grid_u1, N * N * sizeof(double));
-    cudaMallocManaged((void**)&element_grid_u2, N * N * sizeof(double));*/
-    //initiate drum hit
-    /*cudaMemset(element_grid, 0, N * N * sizeof(double));
-    cudaMemset(element_grid_u1, 0, N * N * sizeof(double));
-    cudaMemset(element_grid_u2, 0, N * N * sizeof(double));*/
-
-
+    //explicit memory allocation
     cudaMalloc((void**)&cuda_grid, N * N * sizeof(double));
     cudaMalloc((void**)&cuda_grid_u1, N * N * sizeof(double));
     cudaMalloc((void**)&cuda_grid_u2, N * N * sizeof(double));
@@ -115,7 +99,9 @@ int main(int argc, char** argv)
     int  number_of_blocks = (N*N / thread_number) + 1;
     dim3 grid(number_of_blocks, 1, 1);
     dim3 block(thread_number, 1, 1);
-    //drum_hit <<< 1, 1 >>> (element_grid_u1, N, 1);
+
+    struct GpuTimer timer;
+    timer.Start();
     for (int i = 0; i < T; i++) {
         //do interior element first
         
@@ -127,9 +113,6 @@ int main(int argc, char** argv)
 
         update_corners <<< grid, 1 >>> (cuda_grid, N, 4);
         cudaDeviceSynchronize();
-
-
-
         
         cudaMemcpy(element_grid, cuda_grid, N * N * sizeof(double), cudaMemcpyDeviceToHost);
         
@@ -139,5 +122,8 @@ int main(int argc, char** argv)
         cudaMemcpy(cuda_grid_u2, cuda_grid_u1, sizeof(element_grid_u2), cudaMemcpyDeviceToDevice);
         cudaMemcpy(cuda_grid_u1, cuda_grid, sizeof(element_grid_u1), cudaMemcpyDeviceToDevice);
     }
+    timer.Stop();
+    printf("\ntimer: %f", timer.Elapsed());
+
     return 0;
 }
