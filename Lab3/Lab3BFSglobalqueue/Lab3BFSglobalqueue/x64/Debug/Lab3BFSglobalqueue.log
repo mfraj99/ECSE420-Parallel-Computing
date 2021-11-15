@@ -1,0 +1,4 @@
+﻿read_input.cu.obj : error LNK2005: "int __cdecl read_input_one_two_four(int * *,char *)" (?read_input_one_two_four@@YAHPEAPEAHPEAD@Z) already defined in kernel.cu.obj
+read_input.cu.obj : error LNK2005: "int __cdecl read_input_three(int * *,int * *,int * *,int * *,char *)" (?read_input_three@@YAHPEAPEAH000PEAD@Z) already defined in kernel.cu.obj
+     Creating library D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab3\Lab3BFSglobalqueue\x64\Debug\Lab3BFSglobalqueue.lib and object D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab3\Lab3BFSglobalqueue\x64\Debug\Lab3BFSglobalqueue.exp
+D:\Documents\University\fall2021\ECSE420\ECSE420-Parallel-Computing\Lab3\Lab3BFSglobalqueue\x64\Debug\Lab3BFSglobalqueue.exe : fatal error LNK1169: one or more multiply defined symbols found
